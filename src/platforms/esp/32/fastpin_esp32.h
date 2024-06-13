@@ -108,6 +108,11 @@ public:
 #warning ESP32-H2 chip flash configuration not yet known.  Only pins defined by ESP-IDF will be masked.
 #define FASTLED_UNUSABLE_PIN_MASK (0ULL)
 
+#elif CONFIG_IDF_TARGET_ESP32C6
+// 31 GPIO pins.  ESPIDF defines all pins as valid, 24-30 SPI FLASH
+//#pragma message "ESP32-C6 chip flash configuration not yet known.  Only pins defined by ESP-IDF will be masked."
+#define FASTLED_UNUSABLE_PIN_MASK (0ULL | _FL_BIT(24) | _FL_BIT(25) | _FL_BIT(26) | _FL_BIT(27) | _FL_BIT(28) | _FL_BIT(29)| _FL_BIT(30))
+
 #else
 #warning Unknown ESP32 chip variant.  Only pins defined by ESP-IDF will be masked.
 #define FASTLED_UNUSABLE_PIN_MASK (0ULL)

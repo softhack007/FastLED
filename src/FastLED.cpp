@@ -14,7 +14,9 @@ FASTLED_NAMESPACE_BEGIN
 /// @see https://github.com/pixelmatix/SmartMatrix
 void *pSmartMatrix = NULL;
 
+#if !defined(FASTLED_NO_FASTLED)
 CFastLED FastLED;
+#endif
 
 CLEDController *CLEDController::m_pHead = NULL;
 CLEDController *CLEDController::m_pTail = NULL;
@@ -248,6 +250,8 @@ void CFastLED::setMaxRefreshRate(uint16_t refresh, bool constrain) {
 	}
 }
 
+#if !defined(FASTLED_NO_FASTLED)
+
 /// Called at program exit when run in a desktop environment. 
 /// Extra C definition that some environments may need. 
 /// @returns 0 to indicate success
@@ -288,6 +292,7 @@ namespace __cxxabiv1
 
 	}
 }
+#endif
 #endif
 
 FASTLED_NAMESPACE_END
