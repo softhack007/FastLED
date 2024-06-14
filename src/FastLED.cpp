@@ -16,10 +16,11 @@ void *pSmartMatrix = NULL;
 
 #if !defined(FASTLED_NO_FASTLED)
 CFastLED FastLED;
-#endif
 
 CLEDController *CLEDController::m_pHead = NULL;
 CLEDController *CLEDController::m_pTail = NULL;
+
+#endif
 static uint32_t lastshow = 0;
 
 /// Global frame counter, used for debugging ESP implementations
@@ -32,6 +33,7 @@ uint32_t _retry_cnt=0;
 
 // uint32_t CRGB::Squant = ((uint32_t)((__TIME__[4]-'0') * 28))<<16 | ((__TIME__[6]-'0')*50)<<8 | ((__TIME__[7]-'0')*28);
 
+#if !defined(FASTLED_NO_FASTLED)
 CFastLED::CFastLED() {
 	// clear out the array of led controllers
 	// m_nControllers = 0;
@@ -168,7 +170,7 @@ void CFastLED::setDither(uint8_t ditherMode)  {
 		pCur = pCur->next();
 	}
 }
-
+#endif
 //
 // template<int m, int n> void transpose8(unsigned char A[8], unsigned char B[8]) {
 // 	uint32_t x, y, t;
@@ -220,6 +222,7 @@ extern int noise_min;
 /// @todo Remove?
 extern int noise_max;
 
+#if !defined(FASTLED_NO_FASTLED)
 void CFastLED::countFPS(int nFrames) {
 	static int br = 0;
 	static uint32_t lastframe = 0; // millis();
@@ -249,6 +252,7 @@ void CFastLED::setMaxRefreshRate(uint16_t refresh, bool constrain) {
 		m_nMinMicros = 0;
 	}
 }
+#endif
 
 #if !defined(FASTLED_NO_FASTLED)
 

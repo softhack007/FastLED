@@ -1,5 +1,5 @@
 
-#ifdef ESP32
+#if defined(ESP32) && !defined(FASTLED_NO_FASTLED)
 
 #ifndef FASTLED_ESP32_I2S
 

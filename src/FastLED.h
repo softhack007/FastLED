@@ -31,6 +31,7 @@
 #define __PROG_TYPES_COMPAT__
 #endif
 
+#if !defined(FASTLED_NO_FASTLED)
 #ifdef SmartMatrix_h
 #include <SmartMatrix.h>
 #endif
@@ -46,6 +47,7 @@
 #ifdef USE_OCTOWS2811
 #include <OctoWS2811.h>
 #endif
+#endif
 
 #include <stdint.h>
 
@@ -58,12 +60,15 @@
 #include "fastled_delay.h"
 #include "bitswap.h"
 
+#if !defined(FASTLED_NO_FASTLED)
 #include "controller.h"
 #include "fastpin.h"
 #include "fastspi_types.h"
 #include "dmx.h"
 
 #include "platforms.h"
+#endif
+
 #include "fastled_progmem.h"
 
 #include "lib8tion.h"
@@ -74,12 +79,16 @@
 #include "colorpalettes.h"
 
 #include "noise.h"
+#if !defined(FASTLED_NO_FASTLED)
 #include "power_mgt.h"
 
 #include "fastspi.h"
 #include "chipsets.h"
+#endif
 
 FASTLED_NAMESPACE_BEGIN
+
+#if !defined(FASTLED_NO_FASTLED)
 
 /// LED chipsets with SPI interface
 enum ESPIChipsets {
@@ -682,6 +691,7 @@ extern CFastLED FastLED;
 #define NO_HARDWARE_PIN_SUPPORT
 #endif
 
+#endif
 
 FASTLED_NAMESPACE_END
 

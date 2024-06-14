@@ -7,7 +7,7 @@
 #include "power_mgt.h"
 
 FASTLED_NAMESPACE_BEGIN
-
+#if !defined(FASTLED_NO_FASTLED)
 // POWER MANAGEMENT
 
 /// @name Power Usage Values
@@ -192,4 +192,5 @@ void delay_at_max_brightness_for_power( uint16_t ms)
     FastLED.delay(ms);
 }
 
+#endif
 FASTLED_NAMESPACE_END
