@@ -58,6 +58,15 @@ typedef struct {
 extern rmt_block_mem_t RMTMEM;
 #endif
 
+
+void IRAM_ATTR GiveGTX_sem()
+{
+    if (gTX_sem != NULL)
+        {
+        xSemaphoreGive(gTX_sem);
+        }
+}
+
 ESP32RMTController::ESP32RMTController(int DATA_PIN, int T1, int T2, int T3, int maxChannel, int memBlocks)
     : mPixelData(0), 
       mSize(0), 
@@ -198,7 +207,7 @@ void IRAM_ATTR ESP32RMTController::showPixels()
     gNumStarted++;
 
     // -- The last call to showPixels is the one responsible for doing
-    //    all of the actual worl
+    //    all of the actual work
     if (gNumStarted == gNumControllers) {
         gNext = 0;
 
@@ -220,7 +229,7 @@ void IRAM_ATTR ESP32RMTController::showPixels()
         // -- Wait here while the data is sent. The interrupt handler
         //    will keep refilling the RMT buffers until it is all
         //    done; then it gives the semaphore back.
-        xSemaphoreTake(gTX_sem, portMAX_DELAY);
+        xSemaphoreTake(gTX_sem, FASTLED_RMT_MAX_TICKS_FOR_GTX_SEM);
         xSemaphoreGive(gTX_sem);
 
         // -- Make sure we don't call showPixels too quickly
@@ -323,7 +332,20 @@ void IRAM_ATTR ESP32RMTController::tx_start()
     RMT.tx_conf[mRMT_channel].tx_start = 1;
 #elif CONFIG_IDF_TARGET_ESP32S3
     // rmt_ll_tx_reset_pointer(&RMT, mRMT_channel)
-    RMT.chnconf0[mRMT_channel].mem_rd_rst_n = 1;
+    #if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 0, 0)
+    RMT.chnconf0[mRMT_channel].mem_rd_rst_chn = 1;
+    RMT.chnconf0[mRMT_channel].mem_rd_rst_chn = 0;
+    RMT.chnconf0[mRMT_channel].apb_mem_rst_chn = 1;
+    RMT.chnconf0[mRMT_channel].apb_mem_rst_chn = 0;
+    // rmt_ll_clear_tx_end_interrupt(&RMT, mRMT_channel)
+    RMT.int_clr.val = (1 << (mRMT_channel));
+    // rmt_ll_enable_tx_end_interrupt(&RMT, mRMT_channel, true)
+    RMT.int_ena.val |= (1 << mRMT_channel);
+    // rmt_ll_tx_start(&RMT, mRMT_channel)
+    RMT.chnconf0[mRMT_channel].conf_update_chn = 1;
+    RMT.chnconf0[mRMT_channel].tx_start_chn = 1;
+    #else
+        RMT.chnconf0[mRMT_channel].mem_rd_rst_n = 1;
     RMT.chnconf0[mRMT_channel].mem_rd_rst_n = 0;
     RMT.chnconf0[mRMT_channel].apb_mem_rst_n = 1;
     RMT.chnconf0[mRMT_channel].apb_mem_rst_n = 0;
@@ -399,6 +421,15 @@ void IRAM_ATTR ESP32RMTController::doneOnChannel(rmt_channel_t channel, void * a
     // rmt_ll_enable_tx_end_interrupt(&RMT, channel)
     RMT.int_ena.val &= ~(1 << channel);
     // rmt_ll_tx_stop(&RMT, channel)
+    #if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 0, 0)
+    RMT.chnconf0[channel].tx_stop_chn = 1;
+    RMT.chnconf0[channel].conf_update_chn = 1;
+    // rmt_ll_tx_reset_pointer(&RMT, channel)
+    RMT.chnconf0[channel].mem_rd_rst_chn = 1;
+    RMT.chnconf0[channel].mem_rd_rst_chn = 0;
+    RMT.chnconf0[channel].apb_mem_rst_chn = 1;
+    RMT.chnconf0[channel].apb_mem_rst_chn = 0;
+    #else
     RMT.chnconf0[channel].tx_stop_n = 1;
     RMT.chnconf0[channel].conf_update_n = 1;
     // rmt_ll_tx_reset_pointer(&RMT, channel)
