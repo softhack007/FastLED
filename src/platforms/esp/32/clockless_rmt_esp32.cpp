@@ -356,6 +356,7 @@ void IRAM_ATTR ESP32RMTController::tx_start()
     // rmt_ll_tx_start(&RMT, mRMT_channel)
     RMT.chnconf0[mRMT_channel].conf_update_n = 1;
     RMT.chnconf0[mRMT_channel].tx_start_n = 1;
+	#endif
 #elif CONFIG_IDF_TARGET_ESP32C6
     // rmt_ll_tx_reset_pointer(&RMT, mRMT_channel)
     RMT.chnconf0[mRMT_channel].mem_rd_rst_chn = 1;
@@ -437,6 +438,7 @@ void IRAM_ATTR ESP32RMTController::doneOnChannel(rmt_channel_t channel, void * a
     RMT.chnconf0[channel].mem_rd_rst_n = 0;
     RMT.chnconf0[channel].apb_mem_rst_n = 1;
     RMT.chnconf0[channel].apb_mem_rst_n = 0;
+	#endif
 #elif CONFIG_IDF_TARGET_ESP32C6
     // rmt_ll_enable_tx_end_interrupt(&RMT, channel)
     RMT.int_ena.val &= ~(1 << channel);
